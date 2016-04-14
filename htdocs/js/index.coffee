@@ -1,8 +1,11 @@
 Math.randomNumber = (max) ->
   this.floor(this.random() * max)
 
+Math.randomBoolean = ->
+  0.5 < this.random()
+
 Math.upOrDown = ->
-  if 0.5 < this.random()
+  if this.randomBoolean()
     1
   else
     -1
@@ -30,9 +33,16 @@ class Gene
     @sentence.diff @code
 
   mate: (another) ->
-    pivot = Math.randomNumber @code.length
-    child1code = @code.substr(0, pivot) + another.code.substr pivot
-    child2code = another.code.substr(0, pivot) + @code.substr pivot
+    child1code = ""
+    child2code = ""
+    for i in [0...@code.length]
+      if Math.random()
+        child1code += @code[i]
+        child2code += another.code[i]
+      else
+        child1code += another.code[i]
+        child2code += @code[i]
+    
     [new Gene(child1code, @sentence), new Gene(child2code, @sentence)]
 
   mutate: ->
