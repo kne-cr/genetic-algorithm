@@ -47,11 +47,9 @@ class Gene
 
   mutate: ->
     return if 0.3 < Math.random()
-    index1 = Math.randomNumber @code.length
-    index2 = Math.randomNumber @code.length
-    index3 = Math.randomNumber @code.length
+    indexes = Math.randomNumber(@code.length) for i in [0...3]
     newCode = for s, i in @code
-      if i is index1 or i is index2 or i is index3
+      if 0 <= indexes.indexOf i
         @sentence.change s
       else
         s
@@ -84,7 +82,7 @@ class Population
 
   hasGoalGene: ->
     bools = for member in @members
-      member.code is @sentence.goal
+      member.cost() is 0
     bools.some (isSameAsGoal) -> isSameAsGoal
 
   generate: ->
