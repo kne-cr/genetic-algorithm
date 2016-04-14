@@ -1,8 +1,11 @@
 Math.randomNumber = (max) ->
   this.floor(this.random() * max)
 
+Math.randomBoolean = ->
+  0.5 < this.random()
+
 Math.upOrDown = ->
-  if 0.5 < this.random()
+  if this.randomBoolean()
     1
   else
     -1
@@ -30,18 +33,23 @@ class Gene
     @sentence.diff @code
 
   mate: (another) ->
-    pivot = Math.randomNumber @code.length
-    child1code = @code.substr(0, pivot) + another.code.substr pivot
-    child2code = another.code.substr(0, pivot) + @code.substr pivot
+    child1code = ""
+    child2code = ""
+    for i in [0...@code.length]
+      if Math.random()
+        child1code += @code[i]
+        child2code += another.code[i]
+      else
+        child1code += another.code[i]
+        child2code += @code[i]
+    
     [new Gene(child1code, @sentence), new Gene(child2code, @sentence)]
 
   mutate: ->
     return if 0.3 < Math.random()
-    index1 = Math.randomNumber @code.length
-    index2 = Math.randomNumber @code.length
-    index3 = Math.randomNumber @code.length
+    indexes = Math.randomNumber(@code.length) for i in [0...3]
     newCode = for s, i in @code
-      if i is index1 or i is index2 or i is index3
+      if 0 <= indexes.indexOf i
         @sentence.change s
       else
         s
@@ -74,7 +82,7 @@ class Population
 
   hasGoalGene: ->
     bools = for member in @members
-      member.code is @sentence.goal
+      member.cost() is 0
     bools.some (isSameAsGoal) -> isSameAsGoal
 
   generate: ->
