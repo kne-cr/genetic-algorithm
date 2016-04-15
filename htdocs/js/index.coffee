@@ -1,3 +1,8 @@
+SETTING = {
+  USABLE_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .!?"
+  POPULATION_MEMBER_COUNT: 20
+}
+
 Math.randomNumber = (max) ->
   this.floor(this.random() * max)
 
@@ -9,7 +14,7 @@ Math.upOrDown = ->
 
 class Sentence
   constructor: (@goal) ->
-    @usable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .!?".split("");
+    @usable = SETTING.USABLE_STRING.split ""
 
   random: ->
     @usable[Math.randomNumber @usable.length]
@@ -19,9 +24,13 @@ class Sentence
     @usable.slice(index, index + 1)[0] ? @usable.slice(-1)[0]
 
   diff: (compareTo) ->
-    diffs = for i in [0...compareTo.length]
-      Math.abs(@usable.indexOf(compareTo[i]) - @usable.indexOf(@goal[i]))
-    diffs.reduce (a, b) -> a + b
+    diffs = 0
+    for i in [0...compareTo.length]
+      diffs += Math.abs(@usable.indexOf(compareTo[i]) - @usable.indexOf(@goal[i]))
+    diffs
+
+  goalLength: ->
+    @goal.length
 
 class Gene
   constructor: (@code, @sentence) ->
@@ -31,29 +40,30 @@ class Gene
 
   mate: (another) ->
     pivot = Math.randomNumber @code.length
-    child1code = @code.substr(0, pivot) + another.code.substr pivot
-    child2code = another.code.substr(0, pivot) + @code.substr pivot
+    child1code = @code.slice(0, pivot).concat(another.code.slice pivot)
+    child2code = another.code.slice(0, pivot).concat(@code.slice pivot)
     [new Gene(child1code, @sentence), new Gene(child2code, @sentence)]
 
   mutate: ->
     return if 0.3 < Math.random()
-    index1 = Math.randomNumber @code.length
-    index2 = Math.randomNumber @code.length
-    index3 = Math.randomNumber @code.length
+    changeCodeIndexes = (Math.randomNumber(@code.length) for i in [0...3])
     newCode = for s, i in @code
-      if i is index1 or i is index2 or i is index3
+      if 0 <= changeCodeIndexes.indexOf i
         @sentence.change s
       else
         s
-    @code = newCode.join ""
+    @code = newCode
+
+  isGoal: ->
+    @cost() is 0
 
 class Population
   constructor: (@sentence) ->
     @generationNumber = 0
-    @members = for i in [0...20]
-      code = for i in [0...@sentence.goal.length]
+    @members = for i in [0...SETTING.POPULATION_MEMBER_COUNT]
+      code = for i in [0...@sentence.goalLength()]
         @sentence.random()
-      new Gene code.join(""), @sentence
+      new Gene code, @sentence
 
   mate: ->
     children = @members[0].mate @members[1]
@@ -69,13 +79,14 @@ class Population
 
   display: ->
     genes = for member in @members
-      member.code
+      member.code.join ""
     $("#result").html("#{@generationNumber}世代\r\n" + genes.join("\r\n") + "\r\n\r\n" + $("#result").html())
+    console.log("#{@generationNumber}世代\r\n" + genes.join("\r\n") + "\r\n\r\n")
 
   hasGoalGene: ->
-    bools = for member in @members
-      member.code is @sentence.goal
-    bools.some (isSameAsGoal) -> isSameAsGoal
+    for member in @members
+      return true if member.isGoal()
+    false
 
   generate: ->
     @mate()
