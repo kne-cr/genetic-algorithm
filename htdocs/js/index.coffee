@@ -1,6 +1,7 @@
 SETTING = {
   USABLE_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .!?"
   POPULATION_MEMBER_COUNT: 20
+  MUTATION_RATE: 0.3
 }
 
 Math.randomNumber = (max) ->
@@ -45,7 +46,7 @@ class Gene
     [new Gene(child1code, @sentence), new Gene(child2code, @sentence)]
 
   mutate: ->
-    return if 0.3 < Math.random()
+    return if SETTING.MUTATION_RATE < Math.random()
     changeCodeIndexes = (Math.randomNumber(@code.length) for i in [0...3])
     newCode = for s, i in @code
       if 0 <= changeCodeIndexes.indexOf i

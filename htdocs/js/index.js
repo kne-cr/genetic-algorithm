@@ -4,7 +4,8 @@
 
   SETTING = {
     USABLE_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .!?",
-    POPULATION_MEMBER_COUNT: 20
+    POPULATION_MEMBER_COUNT: 20,
+    MUTATION_RATE: 0.3
   };
 
   Math.randomNumber = function(max) {
@@ -72,7 +73,7 @@
 
     Gene.prototype.mutate = function() {
       var changeCodeIndexes, i, newCode, s;
-      if (0.3 < Math.random()) {
+      if (SETTING.MUTATION_RATE < Math.random()) {
         return;
       }
       changeCodeIndexes = (function() {
