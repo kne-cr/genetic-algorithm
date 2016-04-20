@@ -166,8 +166,7 @@
         }
         return results;
       }).call(this);
-      $("#result").html((this.generationNumber + "世代\r\n") + genes.join("\r\n") + "\r\n\r\n" + $("#result").html());
-      return console.log((this.generationNumber + "世代\r\n") + genes.join("\r\n") + "\r\n\r\n");
+      return $("#result").html((this.generationNumber + "世代\r\n") + genes.join("\r\n") + "\r\n\r\n" + $("#result").html());
     };
 
     Population.prototype.hasGoalGene = function() {
@@ -183,6 +182,7 @@
     };
 
     Population.prototype.generate = function() {
+      var scope;
       this.mate();
       this.mutate();
       this.sort();
@@ -191,7 +191,10 @@
         return;
       }
       this.generationNumber++;
-      return this.generate();
+      scope = this;
+      return setTimeout(function() {
+        return scope.generate();
+      }, 20);
     };
 
     return Population;

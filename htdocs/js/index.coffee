@@ -81,7 +81,6 @@ class Population
     genes = for member in @members
       member.code.join ""
     $("#result").html("#{@generationNumber}世代\r\n" + genes.join("\r\n") + "\r\n\r\n" + $("#result").html())
-    console.log("#{@generationNumber}世代\r\n" + genes.join("\r\n") + "\r\n\r\n")
 
   hasGoalGene: ->
     for member in @members
@@ -95,7 +94,10 @@ class Population
     @display()
     return if @hasGoalGene()
     @generationNumber++
-    @generate()
+    scope = @
+    setTimeout ->
+      scope.generate()
+    , 20
 
 $("#search").click ->
   new Population(new Sentence $("#input").val()).generate()
