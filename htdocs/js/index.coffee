@@ -2,6 +2,7 @@ SETTING = {
   USABLE_STRING: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .!?"
   POPULATION_MEMBER_COUNT: 20
   MUTATION_RATE: 0.3
+  MUTATION_COUNT: 3
 }
 
 Math.randomNumber = (max) ->
@@ -47,7 +48,7 @@ class Gene
 
   mutate: ->
     return if SETTING.MUTATION_RATE < Math.random()
-    changeCodeIndexes = (Math.randomNumber(@code.length) for i in [0...3])
+    changeCodeIndexes = (Math.randomNumber(@code.length) for i in [0...SETTING.MUTATION_COUNT])
     newCode = for s, i in @code
       if 0 <= changeCodeIndexes.indexOf i
         @sentence.change s
@@ -79,9 +80,10 @@ class Population
       a.cost() - b.cost()
 
   display: ->
-    genes = for member in @members
-      member.code.join ""
-    $("#result").html("#{@generationNumber}世代\r\n" + genes.join("\r\n") + "\r\n\r\n" + $("#result").html())
+    message = ""
+    for member, i in @members
+      message += "#{@generationNumber}世代 No.#{i + 1} #{member.code.join('')} <br>"
+    $("#result").html(message + $("#result").html())
 
   hasGoalGene: ->
     for member in @members
@@ -98,7 +100,15 @@ class Population
     scope = @
     setTimeout ->
       scope.generate()
-    , 20
+    , 10
+
+getInvalidChars = ->
+  char for char in $("#input").val().split "" when SETTING.USABLE_STRING.indexOf(char) < 0
 
 $("#search").click ->
+  invalidChars = getInvalidChars()
+  if 0 < invalidChars.length
+    alert("入力できない文字#{invalidChars}が含まれています")
+    return
+  $("#result").empty()
   new Population(new Sentence $("#input").val()).generate()

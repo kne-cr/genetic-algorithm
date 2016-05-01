@@ -1,13 +1,23 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="./js/jquery-1.12.3.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
   </head>
   <body>
-    <input type="text" id="input">
-    <button id="search">当てる！</button>
+  <div class="container">
+    <h2>遺伝的アルゴリズム</h2>
+    <p>入力した文字を当てます。</p>
+    <p>半角英数、半角スペース、「.」「!」「?」の中から入力してください。</p>
+    <p>ランダム要素があるため、処理が終わらない場合はページを閉じてください。</p>
+    <input type="text" id="input" class="form-control" maxlength="10">
     <br>
-    <textarea id="result"></textarea>
+    <button id="search" class="btn btn-primary btn-lg">当てる！</button>
+    <br>
+    <br>
+    <pre id="result" class="pre-scrollable"></pre>
     <script type="text/javascript" src="./js/index.js"></script>
+    </div>
   </body>
 </html>
